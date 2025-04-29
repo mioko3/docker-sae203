@@ -146,6 +146,8 @@ ul li {
     display: flex; /* Utilisation de Flexbox pour les mettre côte à côte */
     justify-content: space-between;
     gap: 20px; /* Espace entre les sections */
+    margin-top: 40px;
+    margin-bottom: 60px;
     
 }
 
@@ -158,6 +160,27 @@ ul li {
 }
 
 .tp-section h2 {
+    color: #2980b9;
+    text-align: center;
+}
+
+
+.projet-container {
+    display: flex; /* Utilisation de Flexbox pour les mettre côte à côte */
+    justify-content: center;
+    margin-top: 50px;
+
+    
+}
+
+.projet-section {
+    width: 50%; /* Chaque section occupe 48% de la largeur */
+    background-color: #ecf0f1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
+}
+
+.projet-section h2 {
     color: #2980b9;
     text-align: center;
 }
