@@ -83,10 +83,17 @@
             });
         });
 
+        
         // Fonction pour afficher les fichiers téléchargés
         function fetchFiles() {
             fetch('listFiles.php')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // Si la réponse n'est pas correcte, on affiche une erreur
+                    throw new Error('Erreur 404 ou autre erreur du serveur');
+                }
+                return response.json(); // Tente de parser la réponse en JSON
+            })
             .then(files => {
                 const fileDisplayDiv = document.getElementById('filePreview');
                 fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
@@ -102,9 +109,11 @@
                 });
             })
             .catch(error => {
-                console.error('Erreur:', error);
+                console.error('Erreur:', error); // Affiche une erreur dans la console
+                alert('Erreur lors du chargement des fichiers');
             });
         }
+
 
         // Appeler la fonction pour afficher les fichiers dès que la page est chargée
         window.onload = fetchFiles;

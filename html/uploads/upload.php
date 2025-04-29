@@ -22,15 +22,6 @@ if (isset($_FILES['fileInput']) && !empty($_FILES['fileInput']['name'])) {
             continue;
         }
 
-        // Vérification du type MIME du fichier
-        $fileType = mime_content_type($uploadedFiles['tmp_name'][$i]);
-        $allowedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'audio/mpeg', 'text/plain'];
-
-        if (!in_array($fileType, $allowedTypes)) {
-            echo "Type de fichier non autorisé pour le fichier $fileName.<br>";
-            continue;
-        }
-
         // Déplacer le fichier du répertoire temporaire vers le répertoire de téléchargement
         if (move_uploaded_file($uploadedFiles['tmp_name'][$i], $targetPath)) {
             echo "Le fichier $fileName a été téléchargé avec succès.<br>";
