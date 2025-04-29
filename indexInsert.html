@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partage de fichiers</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css.css">
+    
+</head>
+<body>
+    <h1>Présentation du second Projet : Page de partage de fichiers</h1>
+    
+    <p>Cette application vous permet de partager des images avec les autres personnes connectées sur le site. <br>
+    Pour partager un fichier, cliquez sur le bouton "Parcourir", puis choisissez l'image de votre choix.<br>
+    Enfin, cliquez sur le bouton "Envoyer" pour la partager avec les autres personnes. <br>
+    Pensez à actualiser la page régulièrement pour ne pas manquer les images des autres.</p>
+
+
+    <!-- Formulaire de téléchargement de fichiers -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="fileInput[]" multiple accept="image/*" />
+        <button type="submit">Envoyer</button>
+        <button type="submit">Actualiser</button>
+    </form>
+
+    <!-- Section pour afficher les fichiers -->
+    <section id="fileDisplay">
+        <h2>Fichiers partagés :</h2>
+        <div id="filePreview"></div>
+    </section>
+
+    <script>
+        // Prévisualisation des fichiers sélectionnés
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const filePreviewDiv = document.getElementById('filePreview');
+
+            const files = event.target.files;
+
+            Array.from(files).forEach(file => {
+                if (file.type.match('image.*')) { // Vérifie si le fichier est une image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.alt = file.name;
+                        imgElement.classList.add('uploaded-image');
+                        filePreviewDiv.appendChild(imgElement);
+                    };
+                    reader.readAsDataURL(file); // Lit le fichier pour obtenir une URL de données
+                } else {
+                    const fileElement = document.createElement('div');
+                    fileElement.textContent = `Fichier non pris en charge : ${file.name}`;
+                    filePreviewDiv.appendChild(fileElement);
+                }
+            });
+        });
+
+        // Fonction pour envoyer les fichiers vers le serveur
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const files = document.getElementById('fileInput').files;
+
+            if (files.length === 0) {
+                alert('Veuillez sélectionner des fichiers à télécharger.');
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                formData.append('fileInput[]', file);
+            });
+
+            fetch('php/upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                alert('Fichiers téléchargés avec succès');
+                fetchFiles(); // Recharger les fichiers après l'upload
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+
+        // Fonction pour afficher les fichiers téléchargés
+        function fetchFiles() {
+            fetch('php/listFiles.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur 404 ou autre erreur du serveur');
+                }
+                return response.json();
+            })
+            .then(files => {
+                const fileDisplayDiv = document.getElementById('filePreview');
+                fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
+
+                files.forEach(file => {
+                    if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = 'uploads/' + file;
+                        imgElement.alt = file;
+                        imgElement.classList.add('uploaded-image');
+                        fileDisplayDiv.appendChild(imgElement);
+                    } else {
+                        const fileElement = document.createElement('div');
+                        fileElement.classList.add('file-item');
+                        const fileLink = document.createElement('a');
+                        fileLink.href = 'uploads/' + file;
+                        fileLink.textContent = file;
+                        fileElement.appendChild(fileLink);
+                        fileDisplayDiv.appendChild(fileElement);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors du chargement des fichiers');
+            });
+        }
+    </script>
+
+    <footer>
+        <a href="exemples.html" class="button">Retour en arrière</a>
+    </footer>
+</body>
+</html>
