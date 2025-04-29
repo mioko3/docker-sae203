@@ -15,6 +15,7 @@ Lance un conteneur nommé test à partir de l’image httpd, en mode détaché (
 3. docker ps 
 
 Lister les conteneurs Docker en cours d’exécution sur le système.
+
 Image / Command / Created / Status / Ports / Names
 
 4. docker stop test
