@@ -24,58 +24,90 @@
     </section>
 
     <script>
+        // Fonction pour prévisualiser les fichiers avant l'envoi
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const fileInput = event.target;
+            const previewDiv = document.getElementById('filePreview');
+            previewDiv.innerHTML = '';  // Réinitialiser la prévisualisation précédente
+
+            for (let file of fileInput.files) {
+                const fileElement = document.createElement('div');
+                const fileName = document.createElement('p');
+                fileName.textContent = file.name;
+
+                // Si c'est une image, on montre une prévisualisation
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.alt = file.name;
+                    img.width = 100;  // Exemple de taille d'aperçu
+                    fileElement.appendChild(img);
+                }
+
+                fileElement.appendChild(fileName);
+                previewDiv.appendChild(fileElement);
+            }
+        });
+
         // Ajouter l'événement de soumission du formulaire
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Empêche le rechargement de la page
+            event.preventDefault(); // Empêche le rechargement de la page
 
-        const formData = new FormData();
-        const files = document.getElementById('fileInput').files;
+            const formData = new FormData();
+            const files = document.getElementById('fileInput').files;
 
-        // Ajouter les fichiers au FormData
-        Array.from(files).forEach(file => {
-            formData.append('fileInput[]', file);
-        });
+            // Vérifier qu'il y a des fichiers à envoyer
+            if (files.length === 0) {
+                alert('Veuillez sélectionner des fichiers à télécharger.');
+                return;
+            }
 
-        // Envoi des fichiers au serveur
-        fetch('upload.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data); // Afficher la réponse du serveur
-            alert('Fichiers téléchargés avec succès');
-            fetchFiles(); // Recharger les fichiers après l'upload
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-        });
-    });
-
-    function fetchFiles() {
-        fetch('listFiles.php')
-        .then(response => response.json())
-        .then(files => {
-            const fileDisplayDiv = document.getElementById('filePreview');
-            fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
-
-            files.forEach(file => {
-                const fileElement = document.createElement('div');
-                fileElement.classList.add('file-item');
-                const fileLink = document.createElement('a');
-                fileLink.href = 'uploads/' + file;
-                fileLink.textContent = file;
-                fileElement.appendChild(fileLink);
-                fileDisplayDiv.appendChild(fileElement);
+            // Ajouter les fichiers au FormData
+            Array.from(files).forEach(file => {
+                formData.append('fileInput[]', file);
             });
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-        });
-    }
 
-    // Appeler la fonction pour afficher les fichiers dès que la page est chargée
-    window.onload = fetchFiles;
+            // Envoi des fichiers au serveur
+            fetch('upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data); // Afficher la réponse du serveur
+                alert('Fichiers téléchargés avec succès');
+                fetchFiles(); // Recharger les fichiers après l'upload
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+
+        // Fonction pour afficher les fichiers téléchargés
+        function fetchFiles() {
+            fetch('listFiles.php')
+            .then(response => response.json())
+            .then(files => {
+                const fileDisplayDiv = document.getElementById('filePreview');
+                fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
+
+                files.forEach(file => {
+                    const fileElement = document.createElement('div');
+                    fileElement.classList.add('file-item');
+                    const fileLink = document.createElement('a');
+                    fileLink.href = 'uploads/' + file;
+                    fileLink.textContent = file;
+                    fileElement.appendChild(fileLink);
+                    fileDisplayDiv.appendChild(fileElement);
+                });
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        }
+
+        // Appeler la fonction pour afficher les fichiers dès que la page est chargée
+        window.onload = fetchFiles;
     </script>
 
     <footer>
