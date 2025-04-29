@@ -3,17 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projet YouTubeurs</title>
-    <!-- Lien vers le fichier CSS externe -->
+    <title>Partage de fichiers</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="css.css">
+    <style>
+        .uploaded-image {
+            max-width: 200px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>Page de partage de fichiers</h1>
 
     <!-- Formulaire de téléchargement de fichiers -->
     <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="fileInput" name="fileInput[]" multiple accept="image/*,video/*,audio/*,text/*" />
+        <input type="file" id="fileInput" name="fileInput[]" multiple accept="image/*" />
         <button type="submit">Envoyer</button>
     </form>
 
@@ -24,22 +30,78 @@
     </section>
 
     <script>
+        // Prévisualisation des fichiers sélectionnés
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const filePreviewDiv = document.getElementById('filePreview');
+            filePreviewDiv.innerHTML = ''; // Réinitialise la prévisualisation
+
+            const files = event.target.files;
+
+            Array.from(files).forEach(file => {
+                if (file.type.match('image.*')) { // Vérifie si le fichier est une image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.alt = file.name;
+                        imgElement.classList.add('uploaded-image');
+                        filePreviewDiv.appendChild(imgElement);
+                    };
+                    reader.readAsDataURL(file); // Lit le fichier pour obtenir une URL de données
+                } else {
+                    const fileElement = document.createElement('div');
+                    fileElement.textContent = `Fichier non pris en charge : ${file.name}`;
+                    filePreviewDiv.appendChild(fileElement);
+                }
+            });
+        });
+
+        // Fonction pour envoyer les fichiers vers le serveur
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const files = document.getElementById('fileInput').files;
+
+            if (files.length === 0) {
+                alert('Veuillez sélectionner des fichiers à télécharger.');
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                formData.append('fileInput[]', file);
+            });
+
+            fetch('php/upload.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                alert('Fichiers téléchargés avec succès');
+                fetchFiles(); // Recharger les fichiers après l'upload
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+            });
+        });
+
         // Fonction pour afficher les fichiers téléchargés
         function fetchFiles() {
-            fetch('uploads/listFiles.php')
+            fetch('php/listFiles.php')
             .then(response => {
                 if (!response.ok) {
-                    // Si la réponse n'est pas correcte, on affiche une erreur
                     throw new Error('Erreur 404 ou autre erreur du serveur');
                 }
-                return response.json(); // Tente de parser la réponse en JSON
+                return response.json();
             })
             .then(files => {
                 const fileDisplayDiv = document.getElementById('filePreview');
                 fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
 
                 files.forEach(file => {
-                    if (file.match(/\.(jpg|jpeg|png|gif)$/i)) { // Vérifie si le fichier est une image
+                    if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
                         const imgElement = document.createElement('img');
                         imgElement.src = 'uploads/' + file;
                         imgElement.alt = file;
@@ -57,44 +119,10 @@
                 });
             })
             .catch(error => {
-                console.error('Erreur:', error); // Affiche une erreur dans la console
+                console.error('Erreur:', error);
                 alert('Erreur lors du chargement des fichiers');
             });
         }
-
-        // Fonction pour envoyer les fichiers vers le serveur
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
-
-            const formData = new FormData();
-            const files = document.getElementById('fileInput').files;
-
-            // Vérifier qu'il y a des fichiers à envoyer
-            if (files.length === 0) {
-                alert('Veuillez sélectionner des fichiers à télécharger.');
-                return;
-            }
-
-            // Ajouter les fichiers au FormData
-            Array.from(files).forEach(file => {
-                formData.append('fileInput[]', file);
-            });
-
-            // Envoi des fichiers au serveur
-            fetch('php/upload.php', {  // Mettre à jour le chemin d'accès vers upload.php
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data); // Afficher la réponse du serveur
-                alert('Fichiers téléchargés avec succès');
-                fetchFiles(); // Recharger les fichiers après l'upload
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
-        });
     </script>
 
     <footer>
