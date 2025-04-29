@@ -26,60 +26,56 @@
     <script>
         // Ajouter l'événement de soumission du formulaire
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
+        event.preventDefault(); // Empêche le rechargement de la page
 
-            const formData = new FormData();
-            const files = document.getElementById('fileInput').files;
+        const formData = new FormData();
+        const files = document.getElementById('fileInput').files;
 
-            // Ajouter les fichiers au FormData
-            Array.from(files).forEach(file => {
-                formData.append('fileInput[]', file);
-            });
-
-            // Envoi des fichiers au serveur avec Fetch
-            fetch('upload.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data); // Afficher la réponse du serveur
-                alert('Fichiers téléchargés avec succès');
-                fetchFiles(); // Récupérer les fichiers après téléchargement
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-            });
+        // Ajouter les fichiers au FormData
+        Array.from(files).forEach(file => {
+            formData.append('fileInput[]', file);
         });
 
-        // Fonction pour récupérer et afficher les fichiers téléchargés
-        function fetchFiles() {
-            fetch('listFiles.php')
-                .then(response => response.json())
-                .then(files => {
-                    const filePreviewDiv = document.getElementById('filePreview');
-                    filePreviewDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
+        // Envoi des fichiers au serveur
+        fetch('upload.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data); // Afficher la réponse du serveur
+            alert('Fichiers téléchargés avec succès');
+            fetchFiles(); // Recharger les fichiers après l'upload
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+    });
 
-                    files.forEach(file => {
-                        const fileElement = document.createElement('div');
-                        fileElement.classList.add('file-item');
+    function fetchFiles() {
+        fetch('listFiles.php')
+        .then(response => response.json())
+        .then(files => {
+            const fileDisplayDiv = document.getElementById('filePreview');
+            fileDisplayDiv.innerHTML = ''; // Réinitialise l'affichage des fichiers
 
-                        const fileLink = document.createElement('a');
-                        fileLink.href = 'uploads/' + file;
-                        fileLink.textContent = file;
-                        fileLink.target = '_blank'; // Ouvrir le fichier dans un nouvel onglet
-                        fileElement.appendChild(fileLink);
+            files.forEach(file => {
+                const fileElement = document.createElement('div');
+                fileElement.classList.add('file-item');
+                const fileLink = document.createElement('a');
+                fileLink.href = 'uploads/' + file;
+                fileLink.textContent = file;
+                fileElement.appendChild(fileLink);
+                fileDisplayDiv.appendChild(fileElement);
+            });
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+    }
 
-                        filePreviewDiv.appendChild(fileElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                });
-        }
-
-        // Appeler la fonction pour afficher les fichiers au chargement de la page
-        window.onload = fetchFiles;
+    // Appeler la fonction pour afficher les fichiers dès que la page est chargée
+    window.onload = fetchFiles;
     </script>
 
     <footer>

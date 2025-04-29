@@ -1,32 +1,28 @@
 <?php
-// Dossier où les fichiers seront stockés
-$uploadDir = 'uploads/';
+// Vérifier si des fichiers sont envoyés
+if (isset($_FILES['fileInput']) && !empty($_FILES['fileInput']['name'])) {
+    $uploadDirectory = 'uploads/';  // Le répertoire où les fichiers seront stockés
+    $uploadedFiles = $_FILES['fileInput'];
 
-// Vérification si des fichiers ont été envoyés
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['fileInput'])) {
-    $files = $_FILES['fileInput'];
-
-    // Créer le dossier si nécessaire
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    // Assurez-vous que le répertoire "uploads" existe
+    if (!is_dir($uploadDirectory)) {
+        mkdir($uploadDirectory, 0777, true);
     }
 
-    // Parcourir les fichiers envoyés
-    for ($i = 0; $i < count($files['name']); $i++) {
-        $fileName = basename($files['name'][$i]);
-        $fileTmpName = $files['tmp_name'][$i];
-        $filePath = $uploadDir . $fileName;
+    // Traiter chaque fichier téléchargé
+    $fileCount = count($uploadedFiles['name']);
+    for ($i = 0; $i < $fileCount; $i++) {
+        $fileName = basename($uploadedFiles['name'][$i]);
+        $targetPath = $uploadDirectory . $fileName;
 
-        // Vérification si le fichier existe déjà
-        if (!file_exists($filePath)) {
-            if (move_uploaded_file($fileTmpName, $filePath)) {
-                echo "Le fichier $fileName a été téléchargé avec succès.<br>";
-            } else {
-                echo "Erreur lors du téléchargement du fichier $fileName.<br>";
-            }
+        // Déplacer le fichier du répertoire temporaire vers le répertoire de téléchargement
+        if (move_uploaded_file($uploadedFiles['tmp_name'][$i], $targetPath)) {
+            echo "Le fichier $fileName a été téléchargé avec succès.<br>";
         } else {
-            echo "Le fichier $fileName existe déjà.<br>";
+            echo "Erreur lors du téléchargement du fichier $fileName.<br>";
         }
     }
+} else {
+    echo "Aucun fichier n'a été téléchargé.";
 }
 ?>

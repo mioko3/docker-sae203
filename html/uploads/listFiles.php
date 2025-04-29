@@ -1,7 +1,7 @@
 <?php
-$uploadDir = 'uploads/';
-$files = scandir($uploadDir);
-$files = array_diff($files, array('.', '..')); // Exclure les éléments "." et ".."
+$directory = 'uploads/';
+$files = array_diff(scandir($directory), array('..', '.'));  // Liste les fichiers, ignore les éléments '.' et '..'
 
-echo json_encode($files);
+// Renvoie les fichiers sous forme de JSON
+echo json_encode(array_values($files));
 ?>
