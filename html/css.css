@@ -1,54 +1,10 @@
-/* Styles généraux */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5f5f5; /* Gris très clair */
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-}
-
-h1 {
-    color: #4a4a4a;
-    margin-bottom: 20px;
-    font-size: 36px;
-}
-
-h2 {
-    color: #4a4a4a;
-    margin-top: 30px;
-    font-size: 28px;
-}
-
-.description {
-    margin: 30px auto;
-    max-width: 800px;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-ul li {
-    font-size: 20px;
-    margin: 10px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.example-img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 15px;
-}
-
-/* Section contenant les fichiers */
+/* =====================
+   Aperçu de fichiers
+===================== */
 #filePreview {
-    display: grid; /* Utilisation de la grille */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Crée une grille responsive avec des colonnes qui s'adaptent */
-    gap: 20px; /* Espacement entre les éléments */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
     margin-top: 20px;
 }
 
@@ -67,13 +23,7 @@ ul li {
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.file-item img {
-    max-width: 100%;
-    max-height: 150px;
-    object-fit: contain;
-    margin-bottom: 10px;
-}
-
+.file-item img,
 .file-item video {
     max-width: 100%;
     max-height: 150px;
@@ -87,19 +37,3 @@ ul li {
     margin: 10px 0;
 }
 
-/* Boutons de suppression et téléchargement */
-.button {
-    display: inline-block;
-    padding: 8px 15px;
-    background-color: #9e9e9e;
-    color: white;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-    margin: 5px 0;
-}
-
-.button:hover {
-    background-color: #616161;
-}
