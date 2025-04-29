@@ -7,6 +7,8 @@ body {
     margin: 0;
     padding: 20px;
     text-align: center;
+    gap: 20px;
+    
 }
 
 h1 {
@@ -138,6 +140,26 @@ ul li {
 .project-info p {
     margin-bottom: 20px;
     font-size: 18px;
+}
+
+.tp-container {
+    display: flex; /* Utilisation de Flexbox pour les mettre côte à côte */
+    justify-content: space-between;
+    gap: 20px; /* Espace entre les sections */
+    
+}
+
+.tp-section {
+    width: 48%; /* Chaque section occupe 48% de la largeur */
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tp-section h2 {
+    color: #2980b9;
+    text-align: center;
 }
 
 footer {
