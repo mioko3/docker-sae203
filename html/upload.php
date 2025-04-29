@@ -1,6 +1,6 @@
 <?php
 // Dossier où les fichiers seront stockés
-$uploadDir = 'uploads/';
+$uploadDir = 'images/';
 
 // Vérification si des fichiers ont été envoyés
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['fileInput'])) {
