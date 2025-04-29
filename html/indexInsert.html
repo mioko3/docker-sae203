@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partage de fichiers</title>
     <link rel="stylesheet" href="styles.css">
-    <style>
-        .uploaded-image {
-            max-width: 200px;
-            margin: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="css.css">
+    
 </head>
 <body>
     <h1>Page de partage de fichiers</h1>
@@ -21,11 +15,12 @@
     <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" id="fileInput" name="fileInput[]" multiple accept="image/*" />
         <button type="submit">Envoyer</button>
+        <button type="submit">Actualiser</button>
     </form>
 
-    <!-- Section pour afficher les fichiers téléchargés -->
+    <!-- Section pour afficher les fichiers -->
     <section id="fileDisplay">
-        <h2>Fichiers téléchargés :</h2>
+        <h2>Fichiers partagés :</h2>
         <div id="filePreview"></div>
     </section>
 
@@ -33,7 +28,6 @@
         // Prévisualisation des fichiers sélectionnés
         document.getElementById('fileInput').addEventListener('change', function(event) {
             const filePreviewDiv = document.getElementById('filePreview');
-            //filePreviewDiv.innerHTML = ''; // Réinitialise la prévisualisation
 
             const files = event.target.files;
 
@@ -126,7 +120,7 @@
     </script>
 
     <footer>
-        <a href="presentation.html" class="button">Retour en arrière</a>
+        <a href="exemples.html" class="button">Retour en arrière</a>
     </footer>
 </body>
 </html>

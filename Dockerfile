@@ -1,3 +1,5 @@
+FROM debian:lastest
+
 # Utiliser une image Apache avec PHP
 FROM php:7.4-apache
 
