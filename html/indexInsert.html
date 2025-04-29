@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet YouTubeurs</title>
+    <!-- Lien vers le fichier CSS externe -->
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <h1>Page de partage de fichiers</h1>
+
+    <!-- Champ de sélection de fichier -->
+    <input type="file" id="fileInput" multiple accept="image/*,video/*,audio/*,text/*" />
+
+    <!-- Section pour afficher les fichiers sélectionnés -->
+    <section id="fileDisplay">
+        <h2>Fichiers sélectionnés :</h2>
+        <div id="fileInfo"></div>
+        <div id="filePreview"></div>
+    </section>
+
+    <section class="links">
+        <h2>Liens utiles</h2>
+        <a href="presentation.html" class="button">Page de Présentation de l'application</a>
+    </section>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const filePreviewDiv = document.getElementById('filePreview');
+
+        // Fonction pour afficher les fichiers stockés dans le localStorage
+        function displayStoredFiles() {
+            const storedFiles = JSON.parse(localStorage.getItem('files')) || [];
+            storedFiles.forEach((fileData, index) => {
+                displayFile(fileData, index);
+            });
+        }
+
+        // Fonction pour afficher un fichier (affiche image, vidéo, audio ou texte avec titre)
+        function displayFile(fileData, index) {
+            const fileItem = document.createElement('div');
+            fileItem.classList.add('file-item');
+            
+            // Si le fichier est une image
+            if (fileData.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = fileData.dataURL;
+                img.alt = 'Aperçu de l\'image';
+                
+                const title = document.createElement('h3');
+                title.textContent = fileData.name;
+
+                fileItem.appendChild(img);
+                fileItem.appendChild(title);
+            }
+            
+            // Si le fichier est une vidéo (mp4)
+            else if (fileData.type === 'video/mp4') {
+                const video = document.createElement('video');
+                video.src = fileData.dataURL;
+                video.controls = true;  // Ajoute les contrôles de lecture
+                video.style.maxWidth = '300px'; // Limite la taille de la vidéo
+                
+                const title = document.createElement('h3');
+                title.textContent = fileData.name;
+
+                fileItem.appendChild(video);
+                fileItem.appendChild(title);
+            }
+
+            // Si le fichier est une musique (mp3, audio/*)
+            else if (fileData.type.startsWith('audio/')) {
+                const audio = document.createElement('audio');
+                audio.src = fileData.dataURL;
+                audio.controls = true;  // Ajoute les contrôles de lecture
+                
+                const title = document.createElement('h3');
+                title.textContent = fileData.name;
+
+                fileItem.appendChild(audio);
+                fileItem.appendChild(title);
+            }
+
+            // Si c'est un fichier texte
+            else if (fileData.type.startsWith('text/')) {
+                const pre = document.createElement('pre');
+                pre.textContent = fileData.textContent;
+                
+                const title = document.createElement('h3');
+                title.textContent = fileData.name;
+
+                fileItem.appendChild(pre);
+                fileItem.appendChild(title);
+            }
+
+            // Ajouter les boutons de suppression et téléchargement
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Supprimer';
+            deleteButton.classList.add('button');
+            deleteButton.onclick = function() { removeFile(index); };
+
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Télécharger';
+            downloadButton.classList.add('button');
+            downloadButton.onclick = function() { downloadFile(index); };
+
+            fileItem.appendChild(deleteButton);
+            fileItem.appendChild(downloadButton);
+
+            // Ajoute le fichier à la liste affichée
+            filePreviewDiv.appendChild(fileItem);
+        }
+
+        // Fonction pour supprimer un fichier
+        function removeFile(index) {
+            const storedFiles = JSON.parse(localStorage.getItem('files')) || [];
+            storedFiles.splice(index, 1); // Retirer le fichier du tableau
+            localStorage.setItem('files', JSON.stringify(storedFiles)); // Sauvegarder à nouveau dans localStorage
+            filePreviewDiv.innerHTML = ''; // Réinitialiser l'affichage
+            displayStoredFiles(); // Réafficher les fichiers restants
+        }
+
+        // Fonction pour télécharger un fichier
+        function downloadFile(index) {
+            const storedFiles = JSON.parse(localStorage.getItem('files')) || [];
+            const fileData = storedFiles[index];
+            const a = document.createElement('a');
+            a.href = fileData.dataURL || URL.createObjectURL(new Blob([fileData.textContent || '']));
+            a.download = fileData.name;
+            a.click();
+        }
+
+        // Lorsqu'un fichier est sélectionné, on l'ajoute à localStorage
+        fileInput.addEventListener('change', function() {
+            const files = fileInput.files;
+            const storedFiles = JSON.parse(localStorage.getItem('files')) || [];
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+
+                // Si c'est une image
+                if (file.type.startsWith('image/')) {
+                    reader.onload = function(e) {
+                        const fileData = {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            dataURL: e.target.result
+                        };
+                        storedFiles.push(fileData);
+                        localStorage.setItem('files', JSON.stringify(storedFiles));
+                        displayFile(fileData, storedFiles.length - 1); // Affiche le fichier immédiatement
+                    };
+                    reader.readAsDataURL(file);
+                }
+                // Si c'est une vidéo .mp4
+                else if (file.type === 'video/mp4') {
+                    reader.onload = function(e) {
+                        const fileData = {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            dataURL: e.target.result
+                        };
+                        storedFiles.push(fileData);
+                        localStorage.setItem('files', JSON.stringify(storedFiles));
+                        displayFile(fileData, storedFiles.length - 1); // Affiche le fichier immédiatement
+                    };
+                    reader.readAsDataURL(file);
+                }
+                // Si c'est un fichier audio
+                else if (file.type.startsWith('audio/')) {
+                    reader.onload = function(e) {
+                        const fileData = {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            dataURL: e.target.result
+                        };
+                        storedFiles.push(fileData);
+                        localStorage.setItem('files', JSON.stringify(storedFiles));
+                        displayFile(fileData, storedFiles.length - 1); // Affiche le fichier immédiatement
+                    };
+                    reader.readAsDataURL(file);
+                }
+                // Si c'est un fichier texte
+                else if (file.type.startsWith('text/')) {
+                    reader.onload = function(e) {
+                        const fileData = {
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            textContent: e.target.result
+                        };
+                        storedFiles.push(fileData);
+                        localStorage.setItem('files', JSON.stringify(storedFiles));
+                        displayFile(fileData, storedFiles.length - 1); // Affiche le fichier immédiatement
+                    };
+                    reader.readAsText(file);
+                }
+                // Si c'est un autre type de fichier, pas d'aperçu
+                else {
+                    const fileData = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size
+                    };
+                    storedFiles.push(fileData);
+                    localStorage.setItem('files', JSON.stringify(storedFiles));
+                    displayFile(fileData, storedFiles.length - 1);
+                }
+            });
+        });
+
+        // Affiche les fichiers stockés dès que la page est chargée
+        displayStoredFiles();
+    </script>
+</body>
+</html>
