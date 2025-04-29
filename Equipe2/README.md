@@ -1,8 +1,6 @@
-# Projet SAE 2.03 Equipe 02
-_(Changez la X par votre numéro d'équipe)_
+# Projet SAE 2.03 Equipe 2
 
 ##  SAE 2.03    Installation de services réseaux   
-_(Le titre doit être court et descriptif)_
 
 1.  docker build -t httpd .
 
@@ -27,7 +25,6 @@ Arrête le conteneur nommé test s’il est en cours d’exécution.
 Supprime le conteneur test du système (doit être arrêté avant).
 
 ## Membres de l'équipe
-_(**Format :** Demi-groupe - NOM Prénom)_
 
 A2 - Erwan    MARTIN     
 A1 - Quoc Tri NGUYEN     
